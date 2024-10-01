@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { fsPromisesCp } from './fs-promises-cp.js';
-
 /**
  * Utility class that can be used to create a temp dir and populate it with a project.
  * This is useful, because esm means that a test project cannot be loaded twice directly.
@@ -13,9 +11,17 @@ import { fsPromisesCp } from './fs-promises-cp.js';
 export class TempTestDirectorySandbox {
   public tmpDir!: string;
   private originalWorkingDir: string | undefined;
-  private readonly from: string;
-  constructor(from: string) {
+  private readonly from;
+  private readonly soft;
+
+  /**
+   *
+   * @param from The directory to copy to the temp dir
+   * @param param1 The options for this sandbox. `soft` means that the `from` directory is the actual temp directory will not actually be copied.
+   */
+  constructor(from: string, { soft = false }: { soft?: boolean } = {}) {
     this.from = path.resolve('testResources', from);
+    this.soft = soft;
   }
 
   /**
@@ -23,8 +29,12 @@ export class TempTestDirectorySandbox {
    */
   public async init(): Promise<void> {
     this.originalWorkingDir = process.cwd();
-    this.tmpDir = path.resolve(this.originalWorkingDir, 'testResources', 'tmp', `workDir-${random()}`);
-    await fsPromisesCp(this.from, this.tmpDir, { recursive: true });
+    if (this.soft) {
+      this.tmpDir = path.resolve(this.from);
+    } else {
+      this.tmpDir = path.resolve(this.originalWorkingDir, 'testResources', 'tmp', `workDir-${random()}`);
+      await fs.promises.cp(this.from, this.tmpDir, { recursive: true });
+    }
     process.chdir(this.tmpDir);
   }
 
@@ -36,7 +46,9 @@ export class TempTestDirectorySandbox {
       throw new Error('Disposed without initialized');
     }
     process.chdir(this.originalWorkingDir);
-    await this.rm();
+    if (!this.soft) {
+      await this.rm();
+    }
   }
 
   private async rm(retries = 5) {

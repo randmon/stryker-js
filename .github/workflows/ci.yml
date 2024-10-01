@@ -1,8 +1,9 @@
 name: CI
 
 on:
-  push: ~
   pull_request: ~
+  merge_group:
+  workflow_dispatch:
   schedule:
     - cron:  '0 12 * * *'
 
@@ -12,18 +13,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
         os: ['ubuntu-latest', 'windows-latest']
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
     - name: Install dependencies
-      run: npm ci || npm ci # retry once, install on windows is flaky...
+      run: npm ci --engine-strict
     - name: Build & lint & test
       run: npm run all
   
@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm run build
+        run: npm run build:no-check
       - name: Download incremental reports
         run: npm run download-incremental-reports
         env:
@@ -57,22 +57,18 @@ jobs:
         echo TEMP="D:\Temp" >> $env:GITHUB_ENV
         echo TMP="D:\Temp" >> $env:GITHUB_ENV
     - uses: actions/checkout@v4
-    - uses: actions/setup-node@v3
-      with:
-        node-version: lts/*
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
     - name: Install dependencies
-      run: npm ci || npm ci # retry once, install on windows is flaky...
+      # retry once, install on windows is flaky...
+      run: npm ci || npm ci
     - name: Build packages
-      run: npm run build
+      run: npm run build:no-check
     - name: e2e install
       run: 'npm run e2e:install'
     - name: e2e lint
       run: 'npm run e2e:lint'
     - name: Run e2e tests
       run: 'npm run e2e:run'
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: e2e-reports

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import os from 'os';
 import { types } from 'util';
 import fs from 'fs';
@@ -119,7 +120,6 @@ class RejectInitRunner extends NotImplementedTestRunner {
 
 class NeverResolvedTestRunner extends NotImplementedTestRunner {
   public dryRun(): Promise<DryRunResult> {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return new Promise<DryRunResult>(() => {});
   }
 }
@@ -163,10 +163,9 @@ class AsynchronousPromiseRejectionHandlerTestRunner extends NotImplementedTestRu
   public promise?: Promise<void>;
 
   public async init() {
-    this.promise = Promise.reject('Reject for now, but will be caught asynchronously');
+    this.promise = Promise.reject(new Error('Reject for now, but will be caught asynchronously'));
   }
   public async dryRun(): Promise<DryRunResult> {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     this.promise!.catch(() => {});
     return factory.completeDryRunResult();
   }

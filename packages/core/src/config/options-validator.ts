@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
 
-import { glob } from 'glob';
+import { Minimatch } from 'minimatch';
 import ajvModule, { ValidateFunction } from 'ajv';
 import { StrykerOptions, strykerCoreSchema } from '@stryker-mutator/api/core';
 import { tokens, commonTokens } from '@stryker-mutator/api/plugin';
@@ -80,10 +80,10 @@ export class OptionsValidator {
       const example = rawOptions.transpilers.includes('babel')
         ? 'babel src --out-dir lib'
         : rawOptions.transpilers.includes('typescript')
-        ? 'tsc -b'
-        : rawOptions.transpilers.includes('webpack')
-        ? 'webpack --config webpack.config.js'
-        : 'npm run build';
+          ? 'tsc -b'
+          : rawOptions.transpilers.includes('webpack')
+            ? 'webpack --config webpack.config.js'
+            : 'npm run build';
       this.log.warn(
         `DEPRECATED. Support for "transpilers" is removed. You can now configure your own "${optionsPath('buildCommand')}". For example, ${example}.`,
       );
@@ -165,7 +165,7 @@ export class OptionsValidator {
     options.mutate.forEach((mutateString, index) => {
       const match = MUTATION_RANGE_REGEX.exec(mutateString);
       if (match) {
-        if (glob.hasMagic(mutateString)) {
+        if (new Minimatch(mutateString).hasMagic()) {
           additionalErrors.push(
             `Config option "mutate[${index}]" is invalid. Cannot combine a glob expression with a mutation range in "${mutateString}".`,
           );

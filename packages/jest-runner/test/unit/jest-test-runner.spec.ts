@@ -1,7 +1,5 @@
 import path from 'path';
-
 import { fileURLToPath, URL } from 'url';
-
 import { createRequire } from 'module';
 
 import { testInjector, factory, assertions } from '@stryker-mutator/test-helpers';
@@ -10,7 +8,6 @@ import sinon from 'sinon';
 import { DryRunStatus, TestStatus, CompleteDryRunResult, ErrorDryRunResult, TestRunnerCapabilities } from '@stryker-mutator/api/test-runner';
 import { INSTRUMENTER_CONSTANTS, MutantCoverage } from '@stryker-mutator/api/core';
 import { Config } from '@jest/types';
-
 import { Task } from '@stryker-mutator/util';
 
 import { JestTestAdapter } from '../../src/jest-test-adapters/index.js';
@@ -379,8 +376,18 @@ describe(JestTestRunner.name, () => {
         });
       });
 
-      it('should not add a set setupFile if testRunner is not specified and jest version >= 27 (circus test runner)', async () => {
+      it('should not add a setupFile if testRunner is not specified and jest version >= 27 (circus test runner)', async () => {
         jestWrapperMock.getVersion.returns('27.0.0');
+        options.jest.config = { testRunner: undefined };
+        const sut = await arrangeInitializedSut();
+        await sut.dryRun(factory.dryRunOptions({ coverageAnalysis: 'perTest' }));
+        expect(jestTestAdapterMock.run).calledWithMatch({
+          jestConfig: sinon.match({ setupFilesAfterEnv: undefined }),
+        });
+      });
+
+      it('should not add a setupFile if testRunner is not specified and jest is an alpha version >= 27 (circus test runner)', async () => {
+        jestWrapperMock.getVersion.returns('30.0.0-alpha.6');
         options.jest.config = { testRunner: undefined };
         const sut = await arrangeInitializedSut();
         await sut.dryRun(factory.dryRunOptions({ coverageAnalysis: 'perTest' }));
@@ -427,6 +434,7 @@ describe(JestTestRunner.name, () => {
         options.jest.config = { testRunner: 'jest-jasmine2' };
         const sut = await arrangeInitializedSut();
         await sut.dryRun(factory.dryRunOptions({ coverageAnalysis: 'all' }));
+
         const { jestConfig } = jestTestAdapterMock.run.getCall(0).args[0];
         expect(jestConfig).has.not.property('setupFilesAfterEnv');
       });
@@ -522,9 +530,9 @@ describe(JestTestRunner.name, () => {
 
     it('should set the node environment variable before calling jest in the dry run', async () => {
       const sut = createSut();
-      jestTestAdapterMock.run.callsFake(async () => {
+      jestTestAdapterMock.run.callsFake(() => {
         expect(process.env.NODE_ENV).to.equal('test');
-        return jestRunResult;
+        return Promise.resolve(jestRunResult);
       });
       await sut.dryRun(factory.dryRunOptions());
       expect(jestTestAdapterMock.run.calledOnce).to.be.true;
@@ -614,9 +622,9 @@ describe(JestTestRunner.name, () => {
   async function actMutantRun(option = factory.mutantRunOptions(), hitCount?: number) {
     const sut = createSut();
     await sut.init();
-    jestTestAdapterMock.run.callsFake(async () => {
+    jestTestAdapterMock.run.callsFake(() => {
       state.instrumenterContext.hitCount = hitCount;
-      return jestRunResult;
+      return Promise.resolve(jestRunResult);
     });
     const result = await sut.mutantRun(option);
     return result;

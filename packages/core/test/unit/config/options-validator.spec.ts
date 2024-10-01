@@ -49,6 +49,7 @@ describe(OptionsValidator.name, () => {
           reportTests: true,
           reportMutants: true,
           reportScoreTable: true,
+          skipFull: false,
         },
         commandRunner: {
           command: 'npm test',
@@ -75,8 +76,8 @@ describe(OptionsValidator.name, () => {
         maxConcurrentTestRunners: 9007199254740991,
         maxTestRunnerReuse: 0,
         mutate: [
-          '{src,lib}/**/!(*.+(s|S)pec|*.+(t|T)est).+(cjs|mjs|js|ts|jsx|tsx|html|vue)',
-          '!{src,lib}/**/__tests__/**/*.+(cjs|mjs|js|ts|jsx|tsx|html|vue)',
+          '{src,lib}/**/!(*.+(s|S)pec|*.+(t|T)est).+(cjs|mjs|js|ts|mts|cts|jsx|tsx|html|vue|svelte)',
+          '!{src,lib}/**/__tests__/**/*.+(cjs|mjs|js|ts|mts|cts|jsx|tsx|html|vue|svelte)',
         ],
         mutator: {
           excludedMutations: [],
@@ -98,6 +99,7 @@ describe(OptionsValidator.name, () => {
         tsconfigFile: 'tsconfig.json',
         warnings: true,
         disableBail: false,
+        ignorers: [],
       };
       expect(options).deep.eq(expectedOptions);
     });

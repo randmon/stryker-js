@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.6.0](https://github.com/stryker-mutator/stryker-js/compare/v8.5.0...v8.6.0) (2024-09-29)
+
+### Bug Fixes
+
+- **deps:** update dependency @cucumber/messages to v26 ([#4960](https://github.com/stryker-mutator/stryker-js/issues/4960)) ([7de2749](https://github.com/stryker-mutator/stryker-js/commit/7de2749c94e7430512541138225c32014f81d16b))
+
+# [8.5.0](https://github.com/stryker-mutator/stryker-js/compare/v8.4.0...v8.5.0) (2024-08-11)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+# [8.4.0](https://github.com/stryker-mutator/stryker-js/compare/v8.3.0...v8.4.0) (2024-08-06)
+
+### Bug Fixes
+
+- **node-18:** revert changes to support node 18 again ([#4935](https://github.com/stryker-mutator/stryker-js/issues/4935)) ([42162bd](https://github.com/stryker-mutator/stryker-js/commit/42162bd36edd5a9f63beff10303259cfff709b0b))
+
+# [8.3.0](https://github.com/stryker-mutator/stryker-js/compare/v8.2.6...v8.3.0) (2024-08-01)
+
+### Features
+
+- **deps:** update dependencies ([#4894](https://github.com/stryker-mutator/stryker-js/issues/4894)) ([eb61333](https://github.com/stryker-mutator/stryker-js/commit/eb61333a8640edfb4c60dbe456d5192dc6b8eeb9))
+
+## [8.2.6](https://github.com/stryker-mutator/stryker-js/compare/v8.2.5...v8.2.6) (2024-02-25)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+## [8.2.5](https://github.com/stryker-mutator/stryker-js/compare/v8.2.4...v8.2.5) (2024-02-20)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+## [8.2.4](https://github.com/stryker-mutator/stryker-js/compare/v8.2.3...v8.2.4) (2024-02-19)
+
+### Bug Fixes
+
+- **deps:** update dependency semver to ~7.6.0 ([#4719](https://github.com/stryker-mutator/stryker-js/issues/4719)) ([ffe9aeb](https://github.com/stryker-mutator/stryker-js/commit/ffe9aebc3d5726796be085d31a356d6922a78948))
+
+## [8.2.3](https://github.com/stryker-mutator/stryker-js/compare/v8.2.2...v8.2.3) (2024-02-03)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+## [8.2.2](https://github.com/stryker-mutator/stryker-js/compare/v8.2.1...v8.2.2) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+## [8.2.1](https://github.com/stryker-mutator/stryker-js/compare/v8.2.0...v8.2.1) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+# [8.2.0](https://github.com/stryker-mutator/stryker-js/compare/v8.1.0...v8.2.0) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/cucumber-runner
+
+# [8.1.0](https://github.com/stryker-mutator/stryker-js/compare/v8.0.0...v8.1.0) (2024-01-29)
+
+### Bug Fixes
+
+- **deps:** update a lot of dependencies ([#4691](https://github.com/stryker-mutator/stryker-js/issues/4691)) ([5b45fa6](https://github.com/stryker-mutator/stryker-js/commit/5b45fa6fb318393378e8dc17ce43fc5e071ddce7))
+
+# [8.0.0](https://github.com/stryker-mutator/stryker-js/compare/v7.3.0...v8.0.0) (2023-11-30)
+
+### Bug Fixes
+
+- **deps:** update dependency @cucumber/messages to v23 ([#4540](https://github.com/stryker-mutator/stryker-js/issues/4540)) ([0472118](https://github.com/stryker-mutator/stryker-js/commit/047211879320c15f4ddb18878c0681198e06070b))
+
+### Features
+
+- **node:** drop official support for node 16 ([#4542](https://github.com/stryker-mutator/stryker-js/issues/4542)) ([e190207](https://github.com/stryker-mutator/stryker-js/commit/e190207e25926179c1a3ed2c0ff97a13720c57bd))
+
+### BREAKING CHANGES
+
+- **node:** NodeJS 16 is no longer supported. Please use NodeJS 18 or higher. See https://nodejs.org/en/about/previous-releases
+
+# [7.3.0](https://github.com/stryker-mutator/stryker-js/compare/v7.2.0...v7.3.0) (2023-10-15)
+
+### Bug Fixes
+
+- **cucumber:** support cucumber 10 ([74c75b6](https://github.com/stryker-mutator/stryker-js/commit/74c75b65f808b214ebf3bebfe1635dbe8f4b467b))
+- **package:** don't publish test and tsbuildinfo. ([#4464](https://github.com/stryker-mutator/stryker-js/issues/4464)) ([ae3d2d8](https://github.com/stryker-mutator/stryker-js/commit/ae3d2d8f6bd92be73dface5cc7e08589872a4d60))
+
 # [7.2.0](https://github.com/stryker-mutator/stryker-js/compare/v7.1.1...v7.2.0) (2023-10-02)
 
 ### Bug Fixes

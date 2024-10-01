@@ -3,24 +3,30 @@ import os from 'os';
 
 import sinon from 'sinon';
 import { expect } from 'chai';
-import { execaCommand, ExecaReturnValue } from 'execa';
-import inquirer from 'inquirer';
+import type { execaCommand, Result } from 'execa';
 import { testInjector } from '@stryker-mutator/test-helpers';
-import { resolveFromCwd } from '@stryker-mutator/util';
+import type { resolveFromCwd } from '@stryker-mutator/util';
 import { PartialStrykerOptions } from '@stryker-mutator/api/core';
 
 import { coreTokens } from '../../../src/di/index.js';
 
+import { inquire } from '../../../src/initializer/inquire.js';
 import { AngularInitializer } from '../../../src/initializer/custom-initializers/angular-initializer.js';
 import { ReactInitializer } from '../../../src/initializer/custom-initializers/react-initializer.js';
 import { VueJsInitializer } from '../../../src/initializer/custom-initializers/vue-js-initializer.js';
 import { fileUtils } from '../../../src/utils/file-utils.js';
+import { SvelteInitializer } from '../../../src/initializer/custom-initializers/svelte-initializer.js';
+import { CustomInitializerConfiguration } from '../../../src/initializer/custom-initializers/custom-initializer.js';
+
+type ExecaBufferResult = Result<{ encoding: 'buffer' }>;
 
 describe('CustomInitializers', () => {
-  let inquirerPrompt: sinon.SinonStub;
+  let selectStub: sinon.SinonStubbedMember<typeof inquire.select>;
+  let confirmStub: sinon.SinonStubbedMember<typeof inquire.confirm>;
 
   beforeEach(() => {
-    inquirerPrompt = sinon.stub(inquirer, 'prompt');
+    selectStub = sinon.stub(inquire, 'select');
+    confirmStub = sinon.stub(inquire, 'confirm');
   });
 
   describe(AngularInitializer.name, () => {
@@ -70,6 +76,7 @@ describe('CustomInitializers', () => {
           },
         },
         reporters: ['progress', 'clear-text', 'html'],
+        ignorers: ['angular'],
         concurrency: 3,
         concurrency_comment: 'Recommended to use about half of your available cores when running stryker with angular',
         coverageAnalysis: 'perTest',
@@ -82,7 +89,7 @@ describe('CustomInitializers', () => {
       resolveStub.returns('./node_modules/@angular/cli/package.json');
       existsStub.resolves(false);
       readFileStub.resolves('{"version": "15.1.0"}');
-      execaStub.resolves({ stdout: Buffer.from('') } as ExecaReturnValue<Buffer>);
+      execaStub.resolves({ stdout: Uint8Array.from([]) } as ExecaBufferResult);
 
       // Act
       await sut.createConfig();
@@ -99,7 +106,7 @@ describe('CustomInitializers', () => {
       resolveStub.returns('./node_modules/@angular/cli/package.json');
       existsStub.resolves(false);
       readFileStub.resolves('{"version": "15.0.9"}'); // version 15.1 added the support
-      execaStub.resolves({ stdout: Buffer.from('') } as ExecaReturnValue<Buffer>);
+      execaStub.resolves({ stdout: Uint8Array.from([]) } as ExecaBufferResult);
 
       // Act
       await sut.createConfig();
@@ -113,7 +120,7 @@ describe('CustomInitializers', () => {
       resolveStub.returns('./node_modules/@angular/cli/package.json');
       existsStub.resolves(true);
       readFileStub.resolves('{"version": "16.0.0"}');
-      execaStub.resolves({ stdout: Buffer.from('') } as ExecaReturnValue<Buffer>);
+      execaStub.resolves({ stdout: Uint8Array.from([]) } as ExecaBufferResult);
 
       // Act
       await sut.createConfig();
@@ -127,7 +134,7 @@ describe('CustomInitializers', () => {
       resolveStub.returns('./node_modules/@angular/cli/package.json');
       existsStub.resolves(false);
       readFileStub.resolves('{"version": "15.1.0"}');
-      execaStub.resolves({ stdout: 'Some detailed output' } as unknown as ExecaReturnValue<Buffer>);
+      execaStub.resolves({ stdout: 'Some detailed output' } as Result<{ encoding: 'utf8' }>);
 
       // Act
       await sut.createConfig();
@@ -167,15 +174,82 @@ describe('CustomInitializers', () => {
     });
   });
 
+  describe(SvelteInitializer.name, () => {
+    let sut: SvelteInitializer;
+    const guideUrl = 'https://stryker-mutator.io/docs/stryker-js/guides/svelte';
+
+    beforeEach(() => {
+      sut = testInjector.injector.injectClass(SvelteInitializer);
+    });
+
+    it('should have the name "svelte"', () => {
+      expect(sut.name).to.eq('svelte');
+    });
+
+    it('should prompt for test runner choice', async () => {
+      selectStub.resolves('vitest');
+      await sut.createConfig();
+      sinon.assert.calledOnceWithExactly(selectStub, {
+        choices: [{ value: 'jest' }, { value: 'vitest' }],
+        message: 'Which test runner are you using?',
+      });
+    });
+
+    it('should write vitest test runner when test runner choice is "vitest"', async () => {
+      selectStub.resolves('vitest');
+      const actualCustomInit = await sut.createConfig();
+      const expected: CustomInitializerConfiguration = {
+        config: {
+          testRunner: 'vitest',
+          reporters: ['progress', 'clear-text', 'html'],
+        },
+        dependencies: ['@stryker-mutator/vitest-runner'],
+        guideUrl,
+      };
+      expect(actualCustomInit).deep.eq(expected);
+    });
+
+    it('should prompt for native ESM when test runner choice is "jest"', async () => {
+      selectStub.resolves('jest');
+      confirmStub.resolves(false);
+
+      await sut.createConfig();
+      sinon.assert.calledWithExactly(confirmStub, {
+        message: 'Are you using native EcmaScript modules? (see https://jestjs.io/docs/ecmascript-modules)',
+        default: true,
+      });
+    });
+
+    it('should add --experimental-vm-modules when using native ESM with jest', async () => {
+      selectStub.resolves('jest');
+      confirmStub.resolves(true);
+      const actualCustomInit = await sut.createConfig();
+      const expected: CustomInitializerConfiguration = {
+        config: {
+          testRunner: 'jest',
+          testRunnerNodeArgs: ['--experimental-vm-modules'],
+          reporters: ['progress', 'clear-text', 'html'],
+        },
+        dependencies: ['@stryker-mutator/jest-runner'],
+        guideUrl,
+      };
+      expect(actualCustomInit).deep.eq(expected);
+    });
+
+    it('should not add --experimental-vm-modules when commonjs with jest', async () => {
+      selectStub.resolves('jest');
+      confirmStub.resolves(false);
+
+      const actualCustomInit = await sut.createConfig();
+      expect(actualCustomInit.config.testRunnerNodeArgs).undefined;
+    });
+  });
+
   describe(VueJsInitializer.name, () => {
     let sut: VueJsInitializer;
 
     beforeEach(() => {
       sut = testInjector.injector.injectClass(VueJsInitializer);
-      inquirerPrompt.resolves({
-        script: 'typescript',
-        testRunner: 'vitest',
-      });
     });
 
     it('should have the name "vue"', () => {

@@ -4,6 +4,9 @@ import { testInjector } from '@stryker-mutator/test-helpers';
 import { expect } from 'chai';
 import chaiJestSnapshot from 'chai-jest-snapshot';
 
+import { NodePath } from '@babel/core';
+
+import { AngularIgnorer } from '../../src/frameworks/angular-ignorer.js';
 import { createInstrumenter, File, Instrumenter } from '../../src/index.js';
 import { createInstrumenterOptions } from '../helpers/factories.js';
 import { resolveTestResource } from '../helpers/resolve-test-resource.js';
@@ -24,7 +27,12 @@ describe('instrumenter integration', () => {
     await arrangeAndActAssert('ts-sample.ts');
   });
   it('should be able to instrument an angular component', async () => {
-    await arrangeAndActAssert('app.component.ts');
+    const angularIgnore = testInjector.injector.injectClass(AngularIgnorer);
+    await arrangeAndActAssert('app.component.ts', createInstrumenterOptions({ ignorers: [angularIgnore] }));
+  });
+  it('should be able to instrument an angular directive', async () => {
+    const angularIgnore = testInjector.injector.injectClass(AngularIgnorer);
+    await arrangeAndActAssert('app.directive.ts', createInstrumenterOptions({ ignorers: [angularIgnore] }));
   });
   it('should be able to instrument a lit-html file', async () => {
     await arrangeAndActAssert('lit-html-sample.ts');
@@ -61,6 +69,24 @@ describe('instrumenter integration', () => {
   });
   it('should be able to place exotic mutants', async () => {
     await arrangeAndActAssert('mutant-placing.ts');
+  });
+  it('should be able to instrument svelte', async () => {
+    await arrangeAndActAssert('svelte-hello-world.svelte');
+  });
+  it('should be able to instrument typescript inside svelte', async () => {
+    await arrangeAndActAssert('svelte-ts.svelte');
+  });
+  it('should be able to instrument svelte with only a module script tag', async () => {
+    await arrangeAndActAssert('svelte-module-script-tag.svelte');
+  });
+  it('should be able to instrument svelte with an instance, module and template script tags', async () => {
+    await arrangeAndActAssert('svelte-multiple-script-tags.svelte');
+  });
+  it('should be able to instrument svelte with only template scripts tags', async () => {
+    await arrangeAndActAssert('svelte-only-template-script-tags.svelte');
+  });
+  it('should be able to instrument svelte with template expressions', async () => {
+    await arrangeAndActAssert('svelte-template-expressions.svelte');
   });
 
   describe('type declarations', () => {
@@ -103,6 +129,15 @@ describe('instrumenter integration', () => {
     it('should not make any mutations in a file with mutate = []', async () => {
       await arrangeAndActAssert({ name: 'specific-no-mutants.ts', mutate: [] });
     });
+
+    it('should not make any mutations in a file only containing console.log with console.log ignorer', async () => {
+      await arrangeAndActAssert(
+        'console-sample.js',
+        createInstrumenterOptions({
+          ignorers: [consoleIgnorer],
+        }),
+      );
+    });
   });
 
   async function arrangeAndActAssert(file: Omit<File, 'content'> | string, options = createInstrumenterOptions()) {
@@ -118,4 +153,19 @@ describe('instrumenter integration', () => {
     chaiJestSnapshot.setFilename(resolveTestResource('instrumenter', `${file.name}.out.snap`));
     expect(result.files[0].content).matchSnapshot();
   }
+
+  const consoleIgnorer = {
+    shouldIgnore(path: NodePath) {
+      if (
+        path.isExpressionStatement() &&
+        path.node.expression.type === 'CallExpression' &&
+        path.node.expression.callee.type === 'MemberExpression' &&
+        path.node.expression.callee.object.type === 'Identifier' &&
+        path.node.expression.callee.object.name === 'console'
+      ) {
+        return 'console statement';
+      }
+      return undefined;
+    },
+  };
 });

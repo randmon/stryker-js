@@ -97,6 +97,11 @@
           "description": "Indicates whether or not to log score table.",
           "type": "boolean",
           "default": true
+        },
+        "skipFull": {
+          "description": "Indicates whether rows with 100% mutation score are hidden in the score table.",
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -380,8 +385,8 @@
         "type": "string"
       },
       "default": [
-        "{src,lib}/**/!(*.+(s|S)pec|*.+(t|T)est).+(cjs|mjs|js|ts|jsx|tsx|html|vue)",
-        "!{src,lib}/**/__tests__/**/*.+(cjs|mjs|js|ts|jsx|tsx|html|vue)"
+        "{src,lib}/**/!(*.+(s|S)pec|*.+(t|T)est).+(cjs|mjs|js|ts|mts|cts|jsx|tsx|html|vue|svelte)",
+        "!{src,lib}/**/__tests__/**/*.+(cjs|mjs|js|ts|mts|cts|jsx|tsx|html|vue|svelte)"
       ]
     },
     "mutator": {
@@ -531,6 +536,14 @@
       "description": "Allows stryker to exit without any errors in cases where no tests are found",
       "type": "boolean",
       "default": false
+    },
+    "ignorers": {
+      "description": "Specify which ignore-plugins to use. With an ignore-plugin you can ignore mutants inside common code patterns that you don't want to test for some reason. For example, you can use this to ignore all `console.debug()` statements from being mutated.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     }
   }
 }

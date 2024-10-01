@@ -1,12 +1,10 @@
 import path from 'path';
 import os from 'os';
-
 import { fileURLToPath } from 'url';
 
 import { expect } from 'chai';
 import { factory, TempTestDirectorySandbox, testInjector, assertions } from '@stryker-mutator/test-helpers';
 import { DryRunStatus, KilledMutantRunResult } from '@stryker-mutator/api/test-runner';
-
 import { normalizeFileName } from '@stryker-mutator/util';
 
 import { TapTestRunner } from '../../src/index.js';
@@ -14,6 +12,9 @@ import { createTapTestRunnerFactory } from '../../src/tap-test-runner.js';
 import { findTestyLookingFiles } from '../../src/tap-helper.js';
 import { TapRunnerOptionsWithStrykerOptions } from '../../src/tap-runner-options-with-stryker-options.js';
 import { tapRunnerOptions } from '../helpers/factory.js';
+
+// This is the setTimeout timer from "testResources/example/tests/bail.spec.js"
+const BAIL_TIMEOUT = 2000;
 
 describe('tap-runner integration', () => {
   let sut: TapTestRunner;
@@ -54,7 +55,7 @@ describe('tap-runner integration', () => {
       // Arrange
       testInjector.logger.isDebugEnabled.returns(true);
       options.tap.nodeArgs = ['--enable-source-maps']; // for testing purposes
-      const testFile = testFilter[0];
+      const [testFile] = testFilter;
 
       // Act
       await sut.dryRun(factory.dryRunOptions({ files: testFilter }));
@@ -92,9 +93,9 @@ describe('tap-runner integration', () => {
 
       // Assert
       assertions.expectKilled(run);
-      // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
+
       expect([...run.killedBy].sort()).deep.eq(['tests/error.spec.js']);
-      expect(run.failureMessage).eq('Concat two strings: An error occurred');
+      expect(run.failureMessage).eq('Concat two strings > An error occurred: An error occurred');
     });
 
     it('should be able to run test file with random output', async () => {
@@ -115,11 +116,12 @@ describe('tap-runner integration', () => {
       assertions.expectSurvived(run);
     });
 
-    const bailedFailureMessage = 'Failing test: This test will fail';
-    const notBailedFailureMessage = 'Failing test: This test will fail, This long tests could be bailed: 3hours is not 3hours';
+    const bailedFailureMessage = 'Failing test > This test will fail: This test will fail';
+    const notBailedFailureMessage =
+      'Failing test > This test will fail: This test will fail, This long tests could be bailed > 3hours is not 3hours: 3hours is not 3hours';
     it('should not bail out process when disableBail is false and forceBail is false', async () => {
       // Arrange/Act
-      const run = await arrangeBail(false, false);
+      const run = await arrangeAndActBail(false, false);
 
       // Assert
       expect(run.failureMessage).eq(notBailedFailureMessage);
@@ -128,7 +130,7 @@ describe('tap-runner integration', () => {
 
     it('should not bail out process when disableBail is false and forceBail is true', async () => {
       // Arrange/Act
-      const run = await arrangeBail(true, true);
+      const run = await arrangeAndActBail(true, true);
 
       // Assert
       expect(run.failureMessage).eq(notBailedFailureMessage);
@@ -137,7 +139,7 @@ describe('tap-runner integration', () => {
 
     it('should not bail out process when disableBail is true and forceBail is false', async () => {
       // Arrange/Act
-      const run = await arrangeBail(true, false);
+      const run = await arrangeAndActBail(true, false);
 
       // Assert
       expect(run.failureMessage).eq(notBailedFailureMessage);
@@ -146,7 +148,7 @@ describe('tap-runner integration', () => {
 
     it('should bail out process when disableBail is false and forceBail is true', async () => {
       // Arrange/Act
-      const run = await arrangeBail(false, true);
+      const run = await arrangeAndActBail(false, true);
 
       // Assert
       expect(run.failureMessage).eq(bailedFailureMessage);
@@ -160,12 +162,12 @@ describe('tap-runner integration', () => {
 
       // Arrange/Act
       const start = new Date();
-      await arrangeBail(false, true);
+      await arrangeAndActBail(false, true);
       const end = new Date();
       const timeDiff = end.getTime() - start.getTime();
 
       // Assert
-      expect(timeDiff).lte(500);
+      expect(timeDiff).lte(BAIL_TIMEOUT);
     });
 
     it('should return result slow when not bailing (on unix)', async function () {
@@ -175,15 +177,15 @@ describe('tap-runner integration', () => {
 
       // Arrange/Act
       const start = new Date();
-      await arrangeBail(false, false);
+      await arrangeAndActBail(false, false);
       const end = new Date();
       const timeDiff = end.getTime() - start.getTime();
 
       // Assert
-      expect(timeDiff).gte(500);
+      expect(timeDiff).gte(BAIL_TIMEOUT);
     });
 
-    async function arrangeBail(disableBail: boolean, forceBail: boolean): Promise<KilledMutantRunResult> {
+    async function arrangeAndActBail(disableBail: boolean, forceBail: boolean): Promise<KilledMutantRunResult> {
       options.tap.forceBail = forceBail;
       const testFiles = ['tests/bail.spec.js', 'tests/error.spec.js'];
 

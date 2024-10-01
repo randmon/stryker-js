@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.6.0](https://github.com/stryker-mutator/stryker-js/compare/v8.5.0...v8.6.0) (2024-09-29)
+
+### Bug Fixes
+
+- **deps:** update dependency tslib to v2.7.0 ([#4981](https://github.com/stryker-mutator/stryker-js/issues/4981)) ([4bdef40](https://github.com/stryker-mutator/stryker-js/commit/4bdef401f3619da3df3ddb8f8e04464185faee0e))
+
+# [8.5.0](https://github.com/stryker-mutator/stryker-js/compare/v8.4.0...v8.5.0) (2024-08-11)
+
+### Bug Fixes
+
+- **deps:** update dependency tap-parser to v18 ([#4942](https://github.com/stryker-mutator/stryker-js/issues/4942)) ([d5bc38e](https://github.com/stryker-mutator/stryker-js/commit/d5bc38e70573a7006ed47365e56870c4cd65cb29))
+
+# [8.4.0](https://github.com/stryker-mutator/stryker-js/compare/v8.3.0...v8.4.0) (2024-08-06)
+
+### Bug Fixes
+
+- **node-18:** revert changes to support node 18 again ([#4935](https://github.com/stryker-mutator/stryker-js/issues/4935)) ([42162bd](https://github.com/stryker-mutator/stryker-js/commit/42162bd36edd5a9f63beff10303259cfff709b0b))
+
+# [8.3.0](https://github.com/stryker-mutator/stryker-js/compare/v8.2.6...v8.3.0) (2024-08-01)
+
+### Features
+
+- **deps:** update dependencies ([#4894](https://github.com/stryker-mutator/stryker-js/issues/4894)) ([eb61333](https://github.com/stryker-mutator/stryker-js/commit/eb61333a8640edfb4c60dbe456d5192dc6b8eeb9))
+
+## [8.2.6](https://github.com/stryker-mutator/stryker-js/compare/v8.2.5...v8.2.6) (2024-02-25)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+## [8.2.5](https://github.com/stryker-mutator/stryker-js/compare/v8.2.4...v8.2.5) (2024-02-20)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+## [8.2.4](https://github.com/stryker-mutator/stryker-js/compare/v8.2.3...v8.2.4) (2024-02-19)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+## [8.2.3](https://github.com/stryker-mutator/stryker-js/compare/v8.2.2...v8.2.3) (2024-02-03)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+## [8.2.2](https://github.com/stryker-mutator/stryker-js/compare/v8.2.1...v8.2.2) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+## [8.2.1](https://github.com/stryker-mutator/stryker-js/compare/v8.2.0...v8.2.1) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+# [8.2.0](https://github.com/stryker-mutator/stryker-js/compare/v8.1.0...v8.2.0) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/tap-runner
+
+# [8.1.0](https://github.com/stryker-mutator/stryker-js/compare/v8.0.0...v8.1.0) (2024-01-29)
+
+### Bug Fixes
+
+- **deps:** update a lot of dependencies ([#4691](https://github.com/stryker-mutator/stryker-js/issues/4691)) ([5b45fa6](https://github.com/stryker-mutator/stryker-js/commit/5b45fa6fb318393378e8dc17ce43fc5e071ddce7))
+
+### Features
+
+- **instrumenter:** support `.mts` and `.cts` file extensions ([#4694](https://github.com/stryker-mutator/stryker-js/issues/4694)) ([7a09c75](https://github.com/stryker-mutator/stryker-js/commit/7a09c75bfda0bd2c3f26346e2c6d538e7942cc97))
+
+# [8.0.0](https://github.com/stryker-mutator/stryker-js/compare/v7.3.0...v8.0.0) (2023-11-30)
+
+### Bug Fixes
+
+- **deps:** update dependency tap-parser to ~15.3.0 ([#4492](https://github.com/stryker-mutator/stryker-js/issues/4492)) ([5ababb3](https://github.com/stryker-mutator/stryker-js/commit/5ababb3dc68eff28d38ff09c3d46cd10453a3dff))
+
+# [7.3.0](https://github.com/stryker-mutator/stryker-js/compare/v7.2.0...v7.3.0) (2023-10-15)
+
+### Bug Fixes
+
+- **deps:** update dependency tap-parser to v15 ([#4457](https://github.com/stryker-mutator/stryker-js/issues/4457)) ([f3f16c3](https://github.com/stryker-mutator/stryker-js/commit/f3f16c3848f37e87a8bdbfe23a8af7acdd016253))
+- **package:** don't publish test and tsbuildinfo. ([#4464](https://github.com/stryker-mutator/stryker-js/issues/4464)) ([ae3d2d8](https://github.com/stryker-mutator/stryker-js/commit/ae3d2d8f6bd92be73dface5cc7e08589872a4d60))
+
 # [7.2.0](https://github.com/stryker-mutator/stryker-js/compare/v7.1.1...v7.2.0) (2023-10-02)
 
 ### Bug Fixes

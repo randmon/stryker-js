@@ -4,7 +4,6 @@ import ts from 'typescript';
 import { propertyPath, Task } from '@stryker-mutator/util';
 import { Mutant, StrykerOptions } from '@stryker-mutator/api/core';
 import { Logger } from '@stryker-mutator/api/logging';
-
 import { tokens, commonTokens } from '@stryker-mutator/api/plugin';
 
 import { HybridFileSystem } from './fs/index.js';
@@ -107,7 +106,6 @@ export class TypescriptCompiler implements ITypescriptCompiler, IFileRelationCre
         watchDirectory: (): ts.FileWatcher => {
           // this is used to see if new files are added to a directory. Can safely be ignored for mutation testing.
           return {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             close() {},
           };
         },
@@ -146,10 +144,14 @@ export class TypescriptCompiler implements ITypescriptCompiler, IFileRelationCre
         this.currentErrors.push(error);
       },
       (status) => {
+        // TODO: Remove this eslint warning
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         this.log.debug(status.messageText.toString());
       },
       (summary) => {
-        summary.code !== FILE_CHANGE_DETECTED_DIAGNOSTIC_CODE && this.currentTask.resolve();
+        if (summary.code !== FILE_CHANGE_DETECTED_DIAGNOSTIC_CODE) {
+          this.currentTask.resolve();
+        }
       },
     );
 
@@ -240,7 +242,7 @@ export class TypescriptCompiler implements ITypescriptCompiler, IFileRelationCre
     const sources: string[] | undefined = JSON.parse(sourceMap.content).sources;
 
     if (sources?.length === 1) {
-      const sourcePath = sources[0];
+      const [sourcePath] = sources;
       return toPosixFileName(path.resolve(path.dirname(sourceMapFileName), sourcePath));
     }
 

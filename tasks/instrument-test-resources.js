@@ -92,6 +92,15 @@ async function main() {
     },
     '__stryker2__',
   );
+  await instrument(
+    {
+      './packages/vitest-runner/testResources/browser-project/src/heading.component.orig.ts':
+        './packages/vitest-runner/testResources/browser-project/src/heading.component.ts',
+      './packages/vitest-runner/testResources/browser-project/src/math.component.orig.ts':
+        './packages/vitest-runner/testResources/browser-project/src/math.component.ts',
+    },
+    '__stryker2__',
+  );
 }
 
 /**
@@ -101,7 +110,7 @@ async function main() {
  */
 async function instrument(fromTo, globalNamespace = INSTRUMENTER_CONSTANTS.NAMESPACE) {
   const files = Object.keys(fromTo).map((fileName) => ({ mutate: true, name: fileName, content: readFileSync(fileName, 'utf-8') }));
-  const out = await instrumenter.instrument(files, { plugins: null, excludedMutations: [] });
+  const out = await instrumenter.instrument(files, { plugins: null, excludedMutations: [], ignorers: [] });
   out.files.forEach((file) => {
     const toFileName = fromTo[file.name];
     mkdirSync(dirname(toFileName), { recursive: true });
@@ -116,6 +125,7 @@ async function instrument(fromTo, globalNamespace = INSTRUMENTER_CONSTANTS.NAMES
     console.log(`✅ ${toFileName}`);
   });
 }
+
 main().catch((err) => {
   console.error(err);
   process.exitCode = 1;

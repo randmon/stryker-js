@@ -56,9 +56,9 @@ const testAddContentWithTestGeneration = `import { add } from '../add.js';
 
 test.each\`
   x    | y    | expected
-  ${1} | ${1} | ${2}
-  ${1} | ${2} | ${3}
-  ${2} | ${2} | ${4}
+  1 | 1 | 2
+  1 | 2 | 3
+  2 | 2 | 4
 \`("add($x, $y) = $expected", ({ x, y, expected }) => {
   expect(add(x, y)).toBe(expected);
 });`;
@@ -109,7 +109,7 @@ class ScenarioBuilder {
   public testCoverage = new TestCoverageTestDouble();
   public sut?: IncrementalDiffer;
 
-  public withMathProjectExample({ mutantState: mutantStatus = MutantStatus.Killed, isStatic = false } = {}): this {
+  public withMathProjectExample({ mutantState: mutantStatus = 'Killed', isStatic = false } = {}): this {
     this.mutants.push(
       createMutant({ id: this.mutantId, fileName: srcAdd, replacement: '-', mutatorName: 'min-replacement', location: loc(1, 11, 1, 12) }),
     );
@@ -123,7 +123,7 @@ class ScenarioBuilder {
           mutatorName: 'min-replacement',
           statusReason: 'Killed by first test',
           testsCompleted: 1,
-          status: mutantStatus,
+          status: mutantStatus as MutantStatus,
           location: loc(1, 11, 1, 12),
         }),
       ],
@@ -288,8 +288,9 @@ class ScenarioBuilder {
         name: `add(${a}, ${b}) = ${answer}`,
         location: loc(8, 3),
       });
-    // clear all tests
-    while (this.incrementalTestFiles[testAdd].tests.shift()) {}
+    while (this.incrementalTestFiles[testAdd].tests.shift()) {
+      // clear all tests
+    }
     this.incrementalTestFiles[testAdd].tests.push(generateTest('spec4', 1, 1, 2), generateTest('spec5', 1, 2, 3), generateTest('spec6', 2, 2, 4));
     this.incrementalFiles[srcAdd].mutants[0].coveredBy = ['spec4', 'spec5', 'spec6'];
     this.incrementalFiles[srcAdd].mutants[0].killedBy = ['spec4'];
@@ -332,8 +333,9 @@ class ScenarioBuilder {
         name: `should result in ${answer} for ${a} and ${b}`,
         location: loc(5, 4),
       });
-    // clear all tests
-    while (this.incrementalTestFiles[testAdd].tests.shift()) {}
+    while (this.incrementalTestFiles[testAdd].tests.shift()) {
+      // clear all tests
+    }
     this.incrementalTestFiles[testAdd].tests.push(
       factory.mutationTestReportSchemaTestDefinition({ id: 'spec3', name: 'should have name "add"', location: loc(9, 2) }),
       createAddWithTestGenerationTestDefinition('spec4', 40, 2, 42),
@@ -403,7 +405,7 @@ class ScenarioBuilder {
           killedBy: ['spec-3'],
           replacement: '/',
           testsCompleted: 1,
-          status: MutantStatus.Killed,
+          status: 'Killed',
           location: loc(1, 11, 1, 12),
         }),
       ],
@@ -459,14 +461,14 @@ describe(IncrementalDiffer.name, () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().act();
 
       // Assert
-      const actualMutant = actualDiff[0];
+      const [actualMutant] = actualDiff;
       const expected: Partial<Mutant> = {
         id: '2',
         fileName: srcAdd,
         replacement: '-',
         mutatorName: 'min-replacement',
         location: loc(1, 11, 1, 12),
-        status: MutantStatus.Killed,
+        status: 'Killed',
         statusReason: 'Killed by first test',
         testsCompleted: 1,
       };
@@ -479,16 +481,16 @@ describe(IncrementalDiffer.name, () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().act();
 
       // Assert
-      const actualMutant = actualDiff[0];
+      const [actualMutant] = actualDiff;
       expect(actualMutant.status).undefined;
     });
 
     it('should not reuse when the mutant was ignored', () => {
       // Arrange
-      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: MutantStatus.Ignored }).act();
+      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: 'Ignored' }).act();
 
       // Assert
-      const actualMutant = actualDiff[0];
+      const [actualMutant] = actualDiff;
       expect(actualMutant.status).undefined;
     });
 
@@ -500,14 +502,14 @@ describe(IncrementalDiffer.name, () => {
         .withCrlfLineEndingsInIncrementalReport()
         .act();
 
-      const actualMutant = actualDiff[0];
-      expect(actualMutant.status).eq(MutantStatus.Killed);
+      const [actualMutant] = actualDiff;
+      expect(actualMutant.status).eq('Killed');
     });
 
     it('should map killedBy and coveredBy to the new test ids if a mutant result is reused', () => {
       const scenario = new ScenarioBuilder().withMathProjectExample();
       const actualDiff = scenario.act();
-      const actualMutant = actualDiff[0];
+      const [actualMutant] = actualDiff;
       const expectedTestIds = [scenario.newTestId];
       const expected: Partial<Mutant> = {
         coveredBy: expectedTestIds,
@@ -518,22 +520,22 @@ describe(IncrementalDiffer.name, () => {
 
     it("should identify that a mutant hasn't changed if lines got added above", () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withAddedLinesAboveMutant("import path from 'path';", '', '').act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it("should identify that a mutant hasn't changed if characters got added before", () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withAddedTextBeforeMutant("/* text added this shouldn't matter */").act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it("should identify that a mutant hasn't changed if lines got removed above", () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withRemovedLinesAboveMutant('import path from "path";', '').act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it("should identify that a mutant hasn't changed if characters got removed before", () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withRemovedTextBeforeMutant("/* text removed, this shouldn't matter*/").act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should not reuse the status of a mutant in changed text', () => {
@@ -543,12 +545,12 @@ describe(IncrementalDiffer.name, () => {
 
     it('should reuse the status when there is no test coverage', () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withoutTestCoverage().act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should reuse the status when there is a test with empty file name', () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withEmptyFileNameTestFile().act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should not copy the status if the mutant came from a different mutator', () => {
@@ -658,7 +660,7 @@ describe(IncrementalDiffer.name, () => {
   describe('test changes', () => {
     it('should identify that a mutant state can be reused when no tests changed', () => {
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withTestFile().act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that mutant state can be reused with changes above', () => {
@@ -670,7 +672,7 @@ describe(IncrementalDiffer.name, () => {
         .act();
 
       // Assert
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that mutant state can be reused with changes before', () => {
@@ -680,7 +682,7 @@ describe(IncrementalDiffer.name, () => {
         .withLocatedTest()
         .withAddedTextBeforeTest('/*text-added*/')
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that mutant state can be reused with changes below', () => {
@@ -690,7 +692,7 @@ describe(IncrementalDiffer.name, () => {
         .withLocatedTest({ includeEnd: true })
         .withSecondTest({ located: true })
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that mutant state can be reused with changes behind', () => {
@@ -700,7 +702,7 @@ describe(IncrementalDiffer.name, () => {
         .withLocatedTest({ includeEnd: true })
         .withAddedTextAfterTest('/*text-added*/')
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should not reuse a mutant state when a covering test gets code added', () => {
@@ -723,7 +725,7 @@ describe(IncrementalDiffer.name, () => {
         .withSecondTest({ located: true })
         .withSecondTestInIncrementalReport()
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should close locations for tests on the same location in the incremental report', () => {
@@ -733,45 +735,39 @@ describe(IncrementalDiffer.name, () => {
         .withUpdatedTestGenerationAndAdditionalTest()
         .withTestGenerationAndAdditionalTestIncrementalReport()
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     // See #3909
     it('should close locations for tests on the same location in the incremental report when they are the last tests', () => {
       // Test cases can generate tests, make sure the correct end position is chosen in those cases
       const actualDiff = new ScenarioBuilder().withMathProjectExample().withTestGeneration().withTestGenerationIncrementalReport().act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that a non-"Killed" state can be reused when a test is removed', () => {
-      const actualDiff = new ScenarioBuilder()
-        .withMathProjectExample({ mutantState: MutantStatus.Survived })
-        .withSecondTestInIncrementalReport()
-        .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Survived);
+      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: 'Survived' }).withSecondTestInIncrementalReport().act();
+      expect(actualDiff[0].status).eq('Survived');
     });
 
     it('should identify that a non-"Killed" state cannot be reused when a test is added', () => {
-      const actualDiff = new ScenarioBuilder()
-        .withMathProjectExample({ mutantState: MutantStatus.Survived })
-        .withSecondTest({ located: false })
-        .act();
+      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: 'Survived' }).withSecondTest({ located: false }).act();
       expect(actualDiff[0].status).undefined;
     });
 
     it('should identify that a "Killed" state can be reused when the killing test didn\'t change', () => {
       const actualDiff = new ScenarioBuilder()
-        .withMathProjectExample({ mutantState: MutantStatus.Killed })
+        .withMathProjectExample({ mutantState: 'Killed' })
         .withTestFile()
         .withLocatedTest()
         .withSecondTestInIncrementalReport()
         .act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should identify that a "Killed" state cannot be reused when the killing test was removed', () => {
       const actualDiff = new ScenarioBuilder()
-        .withMathProjectExample({ mutantState: MutantStatus.Killed })
+        .withMathProjectExample({ mutantState: 'Killed' })
         .withTestFile()
         .withSecondTestInIncrementalReport({ isKillingTest: true })
         .act();
@@ -779,8 +775,8 @@ describe(IncrementalDiffer.name, () => {
     });
 
     it('should identify that a "Killed" state for a static mutant (no covering tests) can be reused when the killing test didn\'t change', () => {
-      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: MutantStatus.Killed, isStatic: true }).act();
-      expect(actualDiff[0].status).eq(MutantStatus.Killed);
+      const actualDiff = new ScenarioBuilder().withMathProjectExample({ mutantState: 'Killed', isStatic: true }).act();
+      expect(actualDiff[0].status).eq('Killed');
     });
 
     it('should collect an added test', () => {
@@ -828,9 +824,9 @@ describe(IncrementalDiffer.name, () => {
       const scenario = new ScenarioBuilder().withMathProjectExample().withSecondSourceAndTestFileInIncrementalReport().withSecondSourceFile();
       const mutants = scenario.act();
       expect(mutants).lengthOf(2);
-      const actualMutant = mutants[1];
+      const [, actualMutant] = mutants;
       expect(actualMutant.id).includes('src/multiply.js@1:11-1:12');
-      expect(actualMutant.status).eq(MutantStatus.Killed);
+      expect(actualMutant.status).eq('Killed');
       expect(actualMutant.fileName).eq(path.resolve(srcMultiply));
     });
     it("should keep historic tests that didn't run this time around", () => {

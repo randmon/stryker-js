@@ -26,32 +26,32 @@ export function mixinJestEnvironment<T extends typeof JestEnvironment>(JestEnvir
     return JestEnvironmentClass;
   } else {
     class StrykerJestEnvironment extends JestEnvironmentClass {
-      // private readonly strykerFileName: string;
-
       /**
        * The shared instrumenter context with the test environment (the `__stryker__` global variable)
        */
-      private readonly strykerContext: InstrumenterContext;
+      readonly #strykerContext: InstrumenterContext;
+      readonly #innerHandleTestEvent: JestEnvironment['handleTestEvent'];
 
       public static readonly [STRYKER_JEST_ENV] = true;
 
       constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
         super(config, context);
-        this.strykerContext = this.global[this.global.__strykerGlobalNamespace__ ?? '__stryker__'] = state.instrumenterContext;
+        this.#innerHandleTestEvent = this.handleTestEvent; // grab the "handle test event", since it might be a class property
+        this.#strykerContext = this.global[this.global.__strykerGlobalNamespace__ ?? '__stryker__'] = state.instrumenterContext;
         state.testFilesWithStrykerEnvironment.add(context.testPath);
-      }
 
-      public handleTestEvent: Circus.EventHandler = async (event: Circus.Event, eventState: Circus.State) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await super.handleTestEvent?.(event as any, eventState);
-        if (state.coverageAnalysis === 'perTest') {
-          if (event.name === 'test_start') {
-            this.strykerContext.currentTestId = fullName(event.test);
-          } else if (event.name === 'test_done') {
-            this.strykerContext.currentTestId = undefined;
+        this.handleTestEvent = (async (event: Circus.Event, eventState: Circus.State) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          await this.#innerHandleTestEvent?.(event as any, eventState);
+          if (state.coverageAnalysis === 'perTest') {
+            if (event.name === 'test_start') {
+              this.#strykerContext.currentTestId = fullName(event.test);
+            } else if (event.name === 'test_done') {
+              this.#strykerContext.currentTestId = undefined;
+            }
           }
-        }
-      };
+        }) satisfies Circus.EventHandler;
+      }
     }
     return StrykerJestEnvironment;
   }

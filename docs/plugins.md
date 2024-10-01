@@ -40,12 +40,17 @@ Stryker already comes with the most useful reporters included:
 - html: An HTML report. See [Stryker's own report](https://dashboard.stryker-mutator.io/reports/github.com/stryker-mutator/stryker-js/master) for an example.
 - dashboard: Upload your mutation testing report to the [Stryker dashboard](https://dashboard.stryker-mutator.io). See the [dashboard docs](../General/dashboard.md) for more information.
 - event-recorder: Write all events to disk. Useful for debug purposes.
+- json: Outputs a JSON file with all mutation test run info of the last run according to the [mutation testing report schema](https://github.com/stryker-mutator/mutation-testing-elements/tree/master/packages/report-schema).
 
 ## Checkers
 
 A checker plugin can _check_ a mutant before it is mutation tested. The check can _fail_ or _pass_; when a check fails, the mutant is not mutation tested.
 
 - **[TypeScript](./typescript-checker.md) (@stryker-mutator/typescript-checker)**: This checker will check each mutant for typescript compile errors.
+
+## Ignorers
+
+With an ignore-plugin, you can ignore all mutants in a specific a code pattern. See [using an ignore-plugin](./disable-mutants.md#using-an-ignore-plugin) for more information.
 
 ## &lt;Your plugin here&gt;
 

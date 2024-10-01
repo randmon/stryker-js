@@ -1,5 +1,4 @@
 import path from 'path';
-import { createRequire } from 'module';
 
 import { expect } from 'chai';
 import { TestResult, TestStatus } from '@stryker-mutator/api/test-runner';
@@ -83,10 +82,11 @@ describe('Running in an example project', () => {
 
   it('should log the exec command on debug', async () => {
     // Arrange
-    const require = createRequire(import.meta.url);
     testInjector.logger.isDebugEnabled.returns(true);
     const expectedConfig: Partial<IConfiguration> = {
-      format: [require.resolve('../../src/stryker-formatter.cjs')],
+      format: [
+        new URL('../../src/stryker-formatter.cjs', import.meta.url).href,
+      ],
       retry: 0,
       parallel: 0,
       failFast: true,
@@ -97,7 +97,7 @@ describe('Running in an example project', () => {
 
     // Assert
     expect(testInjector.logger.debug).calledOnce;
-    const actualLogMessage = testInjector.logger.debug.getCall(0).args[0];
+    const [actualLogMessage] = testInjector.logger.debug.getCall(0).args;
     const expectedPrefix = `Running cucumber with configuration: (${process.cwd()})`;
     expect(actualLogMessage.startsWith(expectedPrefix)).true;
     const actualConfig: IConfiguration = JSON.parse(

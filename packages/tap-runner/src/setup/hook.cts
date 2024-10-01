@@ -9,8 +9,8 @@ const hitLimit = process.env[strykerHitLimit] ? +process.env[strykerHitLimit] : 
 global[strykerGlobalNamespace] = {};
 
 if (hitLimit) {
-  global[strykerGlobalNamespace]!.hitLimit = hitLimit;
-  global[strykerGlobalNamespace]!.hitCount = 0;
+  global[strykerGlobalNamespace].hitLimit = hitLimit;
+  global[strykerGlobalNamespace].hitCount = 0;
 }
 
 process.on('exit', finalCleanup);
@@ -18,7 +18,7 @@ process.on('exit', finalCleanup);
 (['SIGABRT', 'SIGINT', 'SIGHUP', 'SIGTERM'] as const).forEach((signal) =>
   process.on(signal, (_: unknown, signalNumber: number) => {
     process.exit(128 + signalNumber);
-  })
+  }),
 );
 
 function finalCleanup() {

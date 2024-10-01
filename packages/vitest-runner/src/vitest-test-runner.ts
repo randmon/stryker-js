@@ -15,8 +15,7 @@ import {
 import { escapeRegExp, notEmpty } from '@stryker-mutator/util';
 
 import { vitestWrapper, Vitest } from './vitest-wrapper.js';
-
-import { convertTestToTestResult, fromTestId, collectTestsFromSuite, addToInlineDeps } from './vitest-helpers.js';
+import { convertTestToTestResult, fromTestId, collectTestsFromSuite, addToInlineDeps, normalizeCoverage } from './vitest-helpers.js';
 import { FileCommunicator } from './file-communicator.js';
 import { VitestRunnerOptionsWithStrykerOptions } from './vitest-runner-options-with-stryker-options.js';
 
@@ -45,8 +44,17 @@ export class VitestTestRunner implements TestRunner {
     this.setEnv();
     this.ctx = await vitestWrapper.createVitest('test', {
       config: this.options.vitest?.configFile,
+      // @ts-expect-error threads got renamed to "pool: threads" in vitest 1.0.0
       threads: true,
+      pool: 'threads',
       coverage: { enabled: false },
+      poolOptions: {
+        // Since vitest 1.0.0
+        threads: {
+          maxThreads: 1,
+          minThreads: 1,
+        },
+      },
       singleThread: false,
       maxConcurrency: 1,
       watch: false,
@@ -54,12 +62,6 @@ export class VitestTestRunner implements TestRunner {
       bail: this.options.disableBail ? 0 : 1,
       onConsoleLog: () => false,
     });
-
-    if (this.ctx.config.browser.enabled) {
-      throw new Error(
-        'Browser mode is currently not supported by the `@stryker-mutator/vitest-runner`. Please disable `browser.enabled` in your `vitest.config.js`.',
-      );
-    }
 
     // The vitest setup file needs to be inlined
     // See https://github.com/vitest-dev/vitest/issues/3403#issuecomment-1554057966
@@ -77,7 +79,7 @@ export class VitestTestRunner implements TestRunner {
   public async dryRun(): Promise<DryRunResult> {
     await this.fileCommunicator.setDryRun();
     const testResult = await this.run();
-    const mutantCoverage: MutantCoverage = await this.readMutantCoverage();
+    const mutantCoverage: MutantCoverage = this.readMutantCoverage();
     if (testResult.status === DryRunStatus.Complete) {
       return {
         status: testResult.status,
@@ -91,7 +93,7 @@ export class VitestTestRunner implements TestRunner {
   public async mutantRun(options: MutantRunOptions): Promise<MutantRunResult> {
     await this.fileCommunicator.setMutantRun(options);
     const dryRunResult = await this.run(options.testFilter);
-    const hitCount = await this.readHitCount();
+    const hitCount = this.readHitCount();
     const timeOut = determineHitLimitReached(hitCount, options.hitLimit);
     return toMutantRunResult(timeOut ?? dryRunResult);
   }
@@ -101,7 +103,7 @@ export class VitestTestRunner implements TestRunner {
     if (testIds.length > 0) {
       const regexTestNameFilter = testIds
         .map(fromTestId)
-        .map(({ name }) => escapeRegExp(name))
+        .map(({ test: name }) => escapeRegExp(name))
         .join('|');
       const regex = new RegExp(regexTestNameFilter);
       const testFiles = testIds.map(fromTestId).map(({ file }) => file);
@@ -152,7 +154,7 @@ export class VitestTestRunner implements TestRunner {
     // We need to invalidate the module cache for the vitest setup file
     // See https://github.com/vitest-dev/vitest/issues/3409#issuecomment-1555884513
     this.ctx!.projects.forEach((project) => {
-      const moduleGraph = project.server.moduleGraph;
+      const { moduleGraph } = project.server;
       const module = moduleGraph.getModuleById(this.fileCommunicator.vitestSetup);
       if (module) {
         moduleGraph.invalidateModule(module);
@@ -160,7 +162,7 @@ export class VitestTestRunner implements TestRunner {
     });
   }
 
-  private async readHitCount() {
+  private readHitCount() {
     const hitCounters: number[] = this.ctx!.state.getFiles()
       .map((file) => (file.meta as { hitCount?: number }).hitCount)
       .filter(notEmpty);
@@ -168,13 +170,14 @@ export class VitestTestRunner implements TestRunner {
     return hitCounters.reduce((acc, hitCount) => acc + hitCount, 0);
   }
 
-  private async readMutantCoverage(): Promise<MutantCoverage> {
+  private readMutantCoverage(): MutantCoverage {
     // Read coverage from all projects
     const coverages: MutantCoverage[] = [
       ...new Map(this.ctx!.state.getFiles().map((file) => [`${file.projectName}-${file.name}`, file] as const)).entries(),
     ]
       .map(([, file]) => (file.meta as { mutantCoverage?: MutantCoverage }).mutantCoverage)
-      .filter(notEmpty);
+      .filter(notEmpty)
+      .map(normalizeCoverage);
 
     if (coverages.length > 1) {
       return coverages.reduce((acc, projectCoverage) => {

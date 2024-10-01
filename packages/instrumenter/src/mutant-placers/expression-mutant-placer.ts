@@ -78,7 +78,13 @@ function isCallExpression(path: NodePath): path is NodePath<babel.types.CallExpr
 
 function isValidExpression(path: NodePath<babel.types.Expression>) {
   const parent = path.parentPath;
-  return !isObjectPropertyKey() && !isPartOfChain() && !parent.isTaggedTemplateExpression();
+  return (
+    !isObjectPropertyKey() &&
+    !isPartOfChain() &&
+    !parent.isTaggedTemplateExpression() &&
+    !isPartOfDeleteExpression() &&
+    !isPartOfAssignmentExpression()
+  );
 
   /**
    * Determines if the expression is property of an object.
@@ -112,12 +118,33 @@ function isValidExpression(path: NodePath<babel.types.Expression>) {
         (isCallExpression(parent) && parent.node.callee === path.node))
     );
   }
+
+  /**
+   * Determines if the expression is part of a delete expression.
+   * @returns true if the expression is part of a delete expression
+   * @example
+   * delete foo.bar;
+   */
+  function isPartOfDeleteExpression() {
+    return parent.isUnaryExpression() && parent.node.operator === 'delete';
+  }
+
+  /**
+   * Determines if the expression is part of an assignment expression.
+   * @returns true if the expression is part of an assignment expression
+   * @example
+   * foo.bar = 42;
+   * initialNodes.filter((n) => n.id === 'tiptilt')[0].className = tiptiltState;
+   */
+  function isPartOfAssignmentExpression() {
+    return parent.isAssignmentExpression() && parent.node.left === path.node;
+  }
 }
 
 /**
  * Places the mutants with a conditional expression: `global.activeMutant === 1? mutatedCode : originalCode`;
  */
-export const expressionMutantPlacer: MutantPlacer<babel.types.Expression> = {
+export const expressionMutantPlacer = {
   name: 'expressionMutantPlacer',
   canPlace(path) {
     return path.isExpression() && isValidExpression(path);
@@ -135,4 +162,4 @@ export const expressionMutantPlacer: MutantPlacer<babel.types.Expression> = {
     }
     path.replaceWith(expression);
   },
-};
+} satisfies MutantPlacer<babel.types.Expression>;

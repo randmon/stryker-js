@@ -1,6 +1,6 @@
 {
   "name": "@stryker-mutator/api",
-  "version": "7.2.0",
+  "version": "8.6.0",
   "description": "The api for the extendable JavaScript mutation testing framework Stryker",
   "type": "module",
   "repository": {
@@ -19,6 +19,7 @@
   "exports": {
     "./check": "./dist/src/check/index.js",
     "./core": "./dist/src/core/index.js",
+    "./ignore": "./dist/src/ignore/index.js",
     "./logging": "./dist/src/logging/index.js",
     "./plugin": "./dist/src/plugin/index.js",
     "./report": "./dist/src/report/index.js",
@@ -53,15 +54,15 @@
   },
   "homepage": "https://stryker-mutator.io/",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "mutation-testing-metrics": "2.0.3",
-    "mutation-testing-report-schema": "2.0.3",
-    "tslib": "~2.6.0",
+    "mutation-testing-metrics": "3.3.0",
+    "mutation-testing-report-schema": "3.3.0",
+    "tslib": "~2.7.0",
     "typed-inject": "~4.0.0"
   },
   "devDependencies": {
-    "@types/node": "18.18.5"
+    "@types/node": "20.16.10"
   }
 }

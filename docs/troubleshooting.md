@@ -34,7 +34,7 @@ Example:
 > [...] Cannot assign to 'stryNS_9fa48' because it is not a variable [...]
 > ```
 
-The initial test run might fail when you're using ts-jest or ts-node. The reason for this is that Stryker will mutate your code and, by doing so, introduce type errors into your code. Stryker tries to ignore these errors by adding [`// @ts-nocheck`](https://devblogs.microsoft.com/typescript/announcing-typescript-3-7/#ts-nocheck-in-typescript-files) in your source files. However, this is only done for TypeScript-like files inside your `lib`, `src`, and `test` directories by default. If you have your code somewhere else, you will need to override [disableTypeChecks](./configuration.md#disabletypechecks-false--true--string) yourself:
+The initial test run might fail when you're using ts-jest or ts-node. The reason for this is that Stryker will mutate your code and, by doing so, introduce type errors into your code. Stryker tries to ignore these errors by adding [`// @ts-nocheck`](https://devblogs.microsoft.com/typescript/announcing-typescript-3-7/#ts-nocheck-in-typescript-files) in your source files. However, this is only done for TypeScript-like files inside your `lib`, `src`, and `test` directories by default. If you have your code somewhere else, you will need to override [disableTypeChecks](./configuration.md#disabletypechecks-boolean--string) yourself:
 
 ```json
 {
@@ -309,3 +309,52 @@ Explicitly specify the plugins to load in your Stryker configuration file.
 +  ]
 }
 ```
+
+
+### All mutants survive - module-alias
+
+**Symptom**
+
+When using with the `module-alias` you might run into the issue where all mutants survive unexpectedly:
+
+> ```
+> [...]
+> #3. [Survived] ArithmeticOperator
+> C:\z\github\stryker-mutator\stryker-js\e2e\test\jest-node\src\sum.js:5:10
+> -     return a - b;
+> +     return a + b;
+> Ran all tests for this mutant.
+> 
+> Ran 0.00 tests per mutant on average.
+> ----------|---------|----------|-----------|------------|----------|---------|
+> File      | % score | # killed | # timeout | # survived | # no cov | # error |
+> ----------|---------|----------|-----------|------------|----------|---------|
+> All files |    0.00 |        0 |         0 |          4 |        0 |       0 |
+>  sum.js   |    0.00 |        0 |         0 |          4 |        0 |       0 |
+> ----------|---------|----------|-----------|------------|----------|---------|
+> ```
+>
+
+**Problem**
+
+The root cause is that StrykerJS's sandboxing does not support alias imports like `module-alias/register` as it always imports from the local project instead of the sandbox used by Stryker.
+
+It is preferable to avoid using `module-alias` for the following reasons:
+
+* It works by overriding a private node API so it might break at any major node release.
+* It will never work for native ESM.
+
+**Solution**
+
+To keep using `module-alias`, there are 2 workarounds:
+
+1. Mark the `node_modules` folder as part of your sandbox:
+
+```diff
+{
++  "ignorePatterns": ["!node_modules"],
++  "symlinkNodeModules": false
+}
+```
+
+2. Let StrykerJS mutate your files in place: `npx stryker run --inPlace`

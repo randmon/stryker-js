@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.6.0](https://github.com/stryker-mutator/stryker-js/compare/v8.5.0...v8.6.0) (2024-09-29)
+
+### Bug Fixes
+
+- **deps:** update dependency @inquirer/prompts to v6 ([#5029](https://github.com/stryker-mutator/stryker-js/issues/5029)) ([d727cb7](https://github.com/stryker-mutator/stryker-js/commit/d727cb7da16e9bc7c080c9305e4d428f40cf7eee))
+- **deps:** update dependency emoji-regex to ~10.4.0 ([#4987](https://github.com/stryker-mutator/stryker-js/issues/4987)) ([8337f88](https://github.com/stryker-mutator/stryker-js/commit/8337f880f127a8e496548c6e8810f0e8edf126f2))
+- **deps:** update dependency execa to v9.4.0 ([#5024](https://github.com/stryker-mutator/stryker-js/issues/5024)) ([99d60e0](https://github.com/stryker-mutator/stryker-js/commit/99d60e0b2b1337f9ca690693753522fe7751e262))
+- **deps:** update dependency npm-run-path to v6 ([#4986](https://github.com/stryker-mutator/stryker-js/issues/4986)) ([1c9f354](https://github.com/stryker-mutator/stryker-js/commit/1c9f354e4187010eb7c4932dd102ab4ec94951af))
+- **deps:** update dependency tslib to v2.7.0 ([#4981](https://github.com/stryker-mutator/stryker-js/issues/4981)) ([4bdef40](https://github.com/stryker-mutator/stryker-js/commit/4bdef401f3619da3df3ddb8f8e04464185faee0e))
+- **deps:** update dependency typed-rest-client to ~2.1.0 ([#5025](https://github.com/stryker-mutator/stryker-js/issues/5025)) ([454e5e2](https://github.com/stryker-mutator/stryker-js/commit/454e5e27acec96019e7f4c16e3d06c98d2ac26e8))
+- **deps:** update mutation-testing-elements monorepo to v3.3.0 ([#5026](https://github.com/stryker-mutator/stryker-js/issues/5026)) ([88caf82](https://github.com/stryker-mutator/stryker-js/commit/88caf8206d82d8c8c03dec753f445a98f8682bbe))
+
+### Features
+
+- **ignore:** add "angular" ignore plugin ([#4789](https://github.com/stryker-mutator/stryker-js/issues/4789)) ([5d792d8](https://github.com/stryker-mutator/stryker-js/commit/5d792d8ea061b0fbaf14c435ef969ccb946d8362))
+- **init:** use user configured npm registry ([#4937](https://github.com/stryker-mutator/stryker-js/issues/4937)) ([33e348e](https://github.com/stryker-mutator/stryker-js/commit/33e348ebb3ef5075b3c6212dc51a07175b7bf845))
+- **reporter:** add "% score of covered" column to the clear text report ([#4945](https://github.com/stryker-mutator/stryker-js/issues/4945)) ([3b511ed](https://github.com/stryker-mutator/stryker-js/commit/3b511ed0c06f7f9f5a25e24e2d431b4b03c9fdc0))
+
+# [8.5.0](https://github.com/stryker-mutator/stryker-js/compare/v8.4.0...v8.5.0) (2024-08-11)
+
+### Features
+
+- **html report:** support mutation coverage based on covered code ([cec0b95](https://github.com/stryker-mutator/stryker-js/commit/cec0b95f8364e458d3fc0d07d11655e695ebff60))
+
+# [8.4.0](https://github.com/stryker-mutator/stryker-js/compare/v8.3.0...v8.4.0) (2024-08-06)
+
+### Bug Fixes
+
+- **node-18:** revert changes to support node 18 again ([#4935](https://github.com/stryker-mutator/stryker-js/issues/4935)) ([42162bd](https://github.com/stryker-mutator/stryker-js/commit/42162bd36edd5a9f63beff10303259cfff709b0b))
+
+### Features
+
+- **clear-text-reporter:** Add "skipFull" option ([#4875](https://github.com/stryker-mutator/stryker-js/issues/4875)) ([da213ad](https://github.com/stryker-mutator/stryker-js/commit/da213ad70c437617f78fe2e9f175d15c07e1697b))
+
+# [8.3.0](https://github.com/stryker-mutator/stryker-js/compare/v8.2.6...v8.3.0) (2024-08-01)
+
+### Bug Fixes
+
+- **deps:** update mutation-testing-elements monorepo to v3.1.1 ([#4824](https://github.com/stryker-mutator/stryker-js/issues/4824)) ([03eed69](https://github.com/stryker-mutator/stryker-js/commit/03eed690b05766265706139fb3c3ae96ffad3f4b))
+
+### Features
+
+- **deps:** update dependencies ([#4894](https://github.com/stryker-mutator/stryker-js/issues/4894)) ([eb61333](https://github.com/stryker-mutator/stryker-js/commit/eb61333a8640edfb4c60dbe456d5192dc6b8eeb9))
+
+## [8.2.6](https://github.com/stryker-mutator/stryker-js/compare/v8.2.5...v8.2.6) (2024-02-25)
+
+### Bug Fixes
+
+- **deps:** update dependency commander to v12 ([#4713](https://github.com/stryker-mutator/stryker-js/issues/4713)) ([76b1acd](https://github.com/stryker-mutator/stryker-js/commit/76b1acd7f378930e9577ed6d26116b1f4a3c76d4))
+- **deps:** update dependency npm-run-path to ~5.3.0 ([#4752](https://github.com/stryker-mutator/stryker-js/issues/4752)) ([e440d3e](https://github.com/stryker-mutator/stryker-js/commit/e440d3ebb227160187856024820f986aa7b4ba59))
+
+## [8.2.5](https://github.com/stryker-mutator/stryker-js/compare/v8.2.4...v8.2.5) (2024-02-20)
+
+**Note:** Version bump only for package @stryker-mutator/core
+
+## [8.2.4](https://github.com/stryker-mutator/stryker-js/compare/v8.2.3...v8.2.4) (2024-02-19)
+
+### Bug Fixes
+
+- **deps:** update dependency semver to ~7.6.0 ([#4719](https://github.com/stryker-mutator/stryker-js/issues/4719)) ([ffe9aeb](https://github.com/stryker-mutator/stryker-js/commit/ffe9aebc3d5726796be085d31a356d6922a78948))
+
+## [8.2.3](https://github.com/stryker-mutator/stryker-js/compare/v8.2.2...v8.2.3) (2024-02-03)
+
+### Bug Fixes
+
+- **initialize:** use correct url to fetch additional test runner config ([#4699](https://github.com/stryker-mutator/stryker-js/issues/4699)) ([59e53d0](https://github.com/stryker-mutator/stryker-js/commit/59e53d07e2bcdfc3634a45691b833e80ee6b65e0)), closes [#4698](https://github.com/stryker-mutator/stryker-js/issues/4698)
+
+## [8.2.2](https://github.com/stryker-mutator/stryker-js/compare/v8.2.1...v8.2.2) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/core
+
+## [8.2.1](https://github.com/stryker-mutator/stryker-js/compare/v8.2.0...v8.2.1) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/core
+
+# [8.2.0](https://github.com/stryker-mutator/stryker-js/compare/v8.1.0...v8.2.0) (2024-01-29)
+
+**Note:** Version bump only for package @stryker-mutator/core
+
+# [8.1.0](https://github.com/stryker-mutator/stryker-js/compare/v8.0.0...v8.1.0) (2024-01-29)
+
+### Bug Fixes
+
+- **deps:** update a lot of dependencies ([#4691](https://github.com/stryker-mutator/stryker-js/issues/4691)) ([5b45fa6](https://github.com/stryker-mutator/stryker-js/commit/5b45fa6fb318393378e8dc17ce43fc5e071ddce7))
+
+### Features
+
+- **core:** Add .next, .nuxt and .svelte-kit to ignorePattern ([#4645](https://github.com/stryker-mutator/stryker-js/issues/4645)) ([ddc28ea](https://github.com/stryker-mutator/stryker-js/commit/ddc28ea49fa483e4525df96315c1b0c7673449a1))
+- **instrumenter:** support `.mts` and `.cts` file extensions ([#4694](https://github.com/stryker-mutator/stryker-js/issues/4694)) ([7a09c75](https://github.com/stryker-mutator/stryker-js/commit/7a09c75bfda0bd2c3f26346e2c6d538e7942cc97))
+
+# [8.0.0](https://github.com/stryker-mutator/stryker-js/compare/v7.3.0...v8.0.0) (2023-11-30)
+
+### Bug Fixes
+
+- **core:** short circuit test executor when no tests and allowEmpty ([#4477](https://github.com/stryker-mutator/stryker-js/issues/4477)) ([ce3e5cd](https://github.com/stryker-mutator/stryker-js/commit/ce3e5cdd2c3abcf4576fad485f6f86b11895caf1))
+- **deps:** update dependency emoji-regex to v10 ([#4496](https://github.com/stryker-mutator/stryker-js/issues/4496)) ([418688b](https://github.com/stryker-mutator/stryker-js/commit/418688b8095afa380e72e4e5453155b84dc9d96d))
+- **deps:** update mutation-testing-elements monorepo to v2.0.5 ([#4536](https://github.com/stryker-mutator/stryker-js/issues/4536)) ([45e3ae6](https://github.com/stryker-mutator/stryker-js/commit/45e3ae62427ea59dd5ddd42016ecf93b6ecf7e44))
+
+### Features
+
+- **init:** add svelte custom initializer ([#4625](https://github.com/stryker-mutator/stryker-js/issues/4625)) ([418722d](https://github.com/stryker-mutator/stryker-js/commit/418722dfe9155b3db531b5f580edb8d267c6ab38))
+- **node:** drop official support for node 16 ([#4542](https://github.com/stryker-mutator/stryker-js/issues/4542)) ([e190207](https://github.com/stryker-mutator/stryker-js/commit/e190207e25926179c1a3ed2c0ff97a13720c57bd))
+- **svelte:** support mutating `.svelte` files ([0ef9a7f](https://github.com/stryker-mutator/stryker-js/commit/0ef9a7f5045799c39f7c6312c73a8d0345236615))
+
+### BREAKING CHANGES
+
+- **node:** NodeJS 16 is no longer supported. Please use NodeJS 18 or higher. See https://nodejs.org/en/about/previous-releases
+
+# [7.3.0](https://github.com/stryker-mutator/stryker-js/compare/v7.2.0...v7.3.0) (2023-10-15)
+
+### Bug Fixes
+
+- **core:** disableTypeChecks true only forces ts-like file match ([#4485](https://github.com/stryker-mutator/stryker-js/issues/4485)) ([31f3411](https://github.com/stryker-mutator/stryker-js/commit/31f3411276e1251863fb0bb874353e5a3fab32a6))
+- **deps:** update dependency commander to ~11.1.0 ([#4483](https://github.com/stryker-mutator/stryker-js/issues/4483)) ([ab03c0d](https://github.com/stryker-mutator/stryker-js/commit/ab03c0d32562dac46e7b2eac2a3c6aa7d2f7a8ac))
+- **package:** don't publish test and tsbuildinfo. ([#4464](https://github.com/stryker-mutator/stryker-js/issues/4464)) ([ae3d2d8](https://github.com/stryker-mutator/stryker-js/commit/ae3d2d8f6bd92be73dface5cc7e08589872a4d60))
+
+### Features
+
+- **Ignorer plugin:** support ignorer plugins ([#4487](https://github.com/stryker-mutator/stryker-js/issues/4487)) ([4fe1000](https://github.com/stryker-mutator/stryker-js/commit/4fe10004881e8a46ca6ac32d957b069c70910686))
+- **plugin:** add support for `declareValuePlugin` ([#4490](https://github.com/stryker-mutator/stryker-js/issues/4490)) ([a3c35ca](https://github.com/stryker-mutator/stryker-js/commit/a3c35caa3b2dba7036e1ebf081c74fa594f88d03))
+
 # [7.2.0](https://github.com/stryker-mutator/stryker-js/compare/v7.1.1...v7.2.0) (2023-10-02)
 
 ### Bug Fixes

@@ -32,6 +32,14 @@ describe('parsers integration', () => {
     const actual = await actAssertTsx('App.tsx');
     expect(actual).to.matchSnapshot();
   });
+  it('should allow to parse a mts file', async () => {
+    const actual = await actAssertTS('app.mts');
+    expect(actual).to.matchSnapshot();
+  });
+  it('should allow to parse a cts file', async () => {
+    const actual = await actAssertTS('app.cts');
+    expect(actual).to.matchSnapshot();
+  });
 
   it('should allow to parse a react file with custom babelrc file', async () => {
     const actual = await actAssertJS('jsx-with-babelrc/Badge.js');
@@ -104,12 +112,10 @@ describe('parsers integration', () => {
    */
   function cleanFileName(ast: Ast, fileNameOverride: string) {
     ast.originFileName = fileNameOverride;
-    switch (ast.format) {
-      case AstFormat.Html:
-        ast.root.scripts.forEach((script) => {
-          script.originFileName = fileNameOverride;
-        });
-      default:
+    if (ast.format === AstFormat.Html) {
+      ast.root.scripts.forEach((script) => {
+        script.originFileName = fileNameOverride;
+      });
     }
   }
 });
